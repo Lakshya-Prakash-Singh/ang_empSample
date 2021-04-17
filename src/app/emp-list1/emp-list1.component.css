@@ -1,0 +1,78 @@
+@import '~material-icons/iconfont/material-icons.css';
+
+.profileImage {    
+    width: 75px;
+    height: 75px;
+    border-radius: 100%;
+    background-color: #fff;
+}
+
+.empTable > thead > tr > th:nth-child(1) {
+    width: 80px;
+}
+
+.large-font {
+    font-size: 3rem;
+}
+
+.d-none {
+    display: none;
+}
+
+.o-auto {
+    overflow: auto;
+}
+
+.profileImage {
+    box-shadow: 0 0px 10px black;
+    background-color: #fff;
+    width: 75px;
+    height: 75px;
+}
+
+.formImage {
+    box-shadow: 0 -5px 9px silver;
+    top: 0;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    width: 200px;
+    height: 200px;
+}
+
+.mt-150 {
+    margin-top: 150px;
+}
+
+.pt-100 {
+    padding-top: 100px;
+}
+label.uploadImageButton > img {
+    cursor: pointer;
+}
+
+label.uploadImageButton:hover > img {
+    opacity: 0.6;
+    background-color: gray;
+}
+
+label.uploadImageButton::before {
+    content: "Upload";
+    font-family: cursive;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translate(-50%, -50%);
+    text-shadow: 0 0 3px black;
+    color: white;
+    z-index: 1;
+    font-size: xxx-large;
+    display: none;
+    transition: 2s ease-in;
+    text-align: center;
+    cursor: pointer;
+}
+
+label.uploadImageButton:hover::before {
+    display: inline;
+}

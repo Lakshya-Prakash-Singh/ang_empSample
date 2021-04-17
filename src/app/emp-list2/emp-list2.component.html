@@ -1,0 +1,355 @@
+
+  <div class="row">
+    <div class="col s12">
+      <div class="card">
+        <div class="card-content" style="padding: 10px;">
+          <div class="nav-wrapper">
+            <form>
+              <div class="input-field">
+                <input id="search" #searchString (input)="employeeSearch($event)" type="search" placeholder="Search By Name, Number or Email">
+                <label class="label-icon" for="search"><i class="material-icons">search</i></label>
+                <i class="material-icons" (click)="closeSearch()">close</i>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+          
+
+
+  <div class="row">
+    <div class="col l4 m6 s12" *ngFor="let employee of employeeList.data;">
+      <div class="card hoverable">
+        <div class="card-content">
+          <blockquote class="equalizerRow">
+                <div class="equalizerCol">
+                  <div class="profileImage" [ngStyle]="{'background-image': employee.ProfilePic ? 'url(' + baseImageURL + employee.ProfilePic + ')' : 'url(' + '../assets/images/icons/defaultUser.svg' + ')' }"></div>
+                </div>
+                <div class="equalizerCol profileTexts">
+                  <span style="position: absolute;left: 2px;top: 2px;color: #ee6e73;">{{employee?.Designation}}</span>
+                  <h5 class="truncate">{{employee?.FirstName}} {{employee?.LastName}}</h5>
+                  <h6 class="truncate">{{employee?.Email}}</h6>
+                  <p class="truncate">{{employee?.PhoneNumber}}</p>
+                </div>
+          </blockquote>          
+          <div class="iconsHolder">
+            <i (click)="updateList(employee?._id)" class="material-icons  waves-effect blue-text modal-trigger" href="#modal2">edit</i><i (click)="deleteUserInitiator(employee?._id, employee?.FirstName + ' ' + employee?.LastName)" class="red-text waves-effect material-icons">delete_forever</i>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!employeeList?.data?.length">
+      <h2 class="center">No Data Found!</h2>
+    </div>
+  </div>
+  
+  <h6 *ngIf="totalPages != currentPages" class="center" style="position: static;bottom: 0;">Loading...</h6>  
+  <h6 *ngIf="totalPages == currentPages && employeeList?.data?.length" class="center" style="position: static;bottom: 0;" #loadingStatusElseData>All Data Loaded!</h6>
+  
+  <div class="fixed-action-btn">
+    <a class="btn-floating btn-large waves-effect pulse red modal-trigger" href="#modal1">
+      <i class="large material-icons">add</i>
+    </a>
+  </div>
+
+  
+  <div id="modal1" class="modal">
+    <div class="modal-content">
+      <form class="col s12" (ngSubmit)="addEmployee($event)" [formGroup]="addEmployeeForm">
+        <input id="profilePic" (change)="addEmployeeForm_ImageUpload($event)" class="d-none" type="file" accept="image/png, image/jpeg, image/jpg" />
+        <div class="row">
+          <div class="col s12 sticky">            
+            <label for="profilePic" class="uploadImageButton">
+              <img src="{{addEmployeeProfilePic}}" alt="User" class="circle loginImage responsive-img">
+            </label>
+          </div>
+          <div class="col s12">
+              <div class="row">
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">face</i>
+                      <input id="firstName" pattern="^[A-Za-z]+$" data-length="20" minlength="3" maxlength="20" formControlName="FirstName" type="text" required class="validate">
+                      <label for="firstName">First name</label>
+                      <span  *ngIf="addEmployeeForm.get('FirstName')?.hasError('required') && addEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('FirstName')?.hasError('minlength') && addEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="The min. length for this field is 3 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('FirstName')?.hasError('maxlength') && addEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="The max. length for this field is 20 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('FirstName')?.hasError('pattern') && addEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="First name allows alphabets only (space is not allowed)" data-success=""></span>
+                  </div>
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">face</i>
+                      <input id="lastName" pattern="^[A-Za-z]+$" data-length="20" minlength="3" maxlength="20" formControlName="LastName" type="text" required class="validate">
+                      <label for="lastName">Last Name</label>
+                      <span  *ngIf="addEmployeeForm.get('LastName')?.hasError('required') && addEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('LastName')?.hasError('minlength') && addEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="The min. length for this field is 3 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('LastName')?.hasError('maxlength') && addEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="The max. length for this field is 20 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('LastName')?.hasError('pattern') && addEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="Last name allows alphabets only (space is not allowed)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">  
+                  <div class="input-field col m12 s12">
+                      <i class="material-icons iconis prefix">email</i>
+                      <input id="email" formControlName="Email" type="email" required class="validate">
+                      <label for="email">E-mail</label>                                            
+                      <span  *ngIf="addEmployeeForm.get('Email')?.hasError('required') && addEmployeeForm.get('Email')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('Email')?.hasError('email') && addEmployeeForm.get('Email')?.touched" class="helper-text" data-error="Please enter a Valid Email" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">phone</i>
+                      <input id="phone"  pattern="^[6-9]\d{9}$" formControlName="PhoneNumber" minlength="10" maxlength="10" type="text" required class="validate">
+                      <label for="phone">Phone Number</label>
+                      <span  *ngIf="addEmployeeForm.get('PhoneNumber')?.hasError('required') && addEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('PhoneNumber')?.hasError('minlength') && addEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of min. 10 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('PhoneNumber')?.hasError('maxlength') && addEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of max. 10 characters." data-success=""></span>
+                      <span  *ngIf="(addEmployeeForm.get('PhoneNumber')?.value.length == 10) && addEmployeeForm.get('PhoneNumber')?.hasError('pattern') && addEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="Please enter a valid mobile number (only numbers starting from 6-9)" data-success=""></span>
+                  </div>
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">phone</i>
+                      <input id="AlternateNumber"  pattern="^(\s*|[6-9]\d{9})$" formControlName="AlternateNumber" minlength="10" maxlength="10" type="text" class="validate">
+                      <label for="AlternateNumber">Alternate Number</label>
+                      <span  *ngIf="addEmployeeForm.get('AlternateNumber')?.hasError('required') && addEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('AlternateNumber')?.hasError('minlength') && addEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of min. 10 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('AlternateNumber')?.hasError('maxlength') && addEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of max. 10 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('AlternateNumber')?.hasError('pattern') && addEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="Please enter a valid mobile number (only numbers starting from 6-9)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="input-field col s12">
+                      <i class="material-icons iconis prefix">home</i>
+                      <input id="TempAddrLine1" (change)="TempAndPermAddrHandler($event)" pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="TempAddrLine1" maxlength="100" type="text" required class="validate">
+                      <label for="TempAddrLine1">Temp. Address (House & street)</label>
+                      <span  *ngIf="addEmployeeForm.get('TempAddrLine1')?.hasError('required') && addEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('TempAddrLine1')?.hasError('maxlength') && addEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('TempAddrLine1')?.hasError('pattern') && addEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+              <div class="input-field col m8 s12">
+                  <i class="material-icons iconis prefix">location_city</i>
+                  <input id="TempAddrLine2" (change)="TempAndPermAddrHandler($event)" pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="TempAddrLine2" maxlength="100" type="text" required class="validate">
+                  <label for="TempAddrLine2">Temp. Address (Area & City)</label>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrLine2')?.hasError('required') && addEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrLine2')?.hasError('maxlength') && addEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrLine2')?.hasError('pattern') && addEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+              </div>
+              <div class="input-field col m4 s12">
+                  <i class="material-icons iconis prefix">location_on</i>
+                  <input id="TempAddrPincode" (change)="TempAndPermAddrHandler($event)" pattern="^[0-9]*$" formControlName="TempAddrPincode" minlength="6" maxlength="6" type="text" required class="validate">
+                  <label for="TempAddrPincode">Temp. Address (Pincode)</label>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrPincode')?.hasError('required') && addEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrPincode')?.hasError('maxlength') && addEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="Address Line 1 should be of max. 100 characters." data-success=""></span>
+                  <span  *ngIf="addEmployeeForm.get('TempAddrPincode')?.hasError('pattern') && addEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="Please enter a valid pincode (only 6 numbers)" data-success=""></span>
+              </div>
+              </div>
+              <div class="row" style="margin-bottom: 50px;">
+              <div class="input-field col s12">              
+                  <label>
+                      <input id="IsTempAndPermAddrSame" (change)="TempAndPermAddrHandler($event)" formControlName="IsTempAndPermAddrSame" type="checkbox" class="validate">
+                      <span>Is Permanent Address Is Same To The Temprory Address?</span>
+                  </label>
+              </div>
+              </div>
+              <div class="row" [class.d-none]="addEmployeeForm.get('IsTempAndPermAddrSame')?.value">
+                  <div class="input-field col s12">
+                      <i class="material-icons iconis prefix">home</i>
+                      <input id="PermAddrLine1"  pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="PermAddrLine1" maxlength="100" type="text" required class="validate">
+                      <label for="PermAddrLine1" [class.active]="addEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (House & street)</label>
+                      <span  *ngIf="addEmployeeForm.get('PermAddrLine1')?.hasError('required') && addEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('PermAddrLine1')?.hasError('maxlength') && addEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                      <span  *ngIf="addEmployeeForm.get('PermAddrLine1')?.hasError('pattern') && addEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row" [class.d-none]="addEmployeeForm.get('IsTempAndPermAddrSame')?.value">
+                <div class="input-field col m8 s12">
+                    <i class="material-icons iconis prefix">location_city</i>
+                    <input id="PermAddrLine2"  pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="PermAddrLine2" maxlength="100" type="text" required class="validate">
+                    <label for="PermAddrLine2" [class.active]="addEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (Area & City)</label>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrLine2')?.hasError('required') && addEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrLine2')?.hasError('maxlength') && addEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrLine2')?.hasError('pattern') && addEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                </div>
+                <div class="input-field col m4 s12">
+                    <i class="material-icons iconis prefix">location_on</i>
+                    <input id="PermAddrPincode"  pattern="^[0-9]*$" formControlName="PermAddrPincode" minlength="6" maxlength="6" type="text" required class="validate">
+                    <label for="PermAddrPincode" [class.active]="addEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (Pincode)</label>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrPincode')?.hasError('required') && addEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrPincode')?.hasError('minlength') && addEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Address pincode should be of 6 characters." data-success=""></span>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrPincode')?.hasError('maxlength') && addEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Address pincode should be of 6 characters." data-success=""></span>
+                    <span  *ngIf="addEmployeeForm.get('PermAddrPincode')?.hasError('pattern') && addEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Please enter a valid pincode (only 6 numbers)" data-success=""></span>
+                </div>
+              </div>
+              <div class="row">
+              <div class="input-field col s12">
+                  
+                  <i class="material-icons iconis prefix">assignment_ind</i>
+                  <select formControlName="Designation" class="browser-default selectDesignation">
+                      <option value="" disabled selected>Choose Employee Designation<sup class="red-text">*</sup></option>
+                      <option  *ngFor="let Designations of designationList.data;" value="{{Designations.Designation}}">{{Designations?.Designation}}</option>
+                  </select>
+                  <span  *ngIf="addEmployeeForm.get('Designation')?.hasError('required') && addEmployeeForm.get('Designation')?.touched" class="helper-text red-text" data-error="This field is required." data-success=""></span>
+              </div>
+              </div>
+              <div class="row d-none">
+                  <input class="btn waves-effect waves-light" type="submit" name="submit" id="btnAddEmployeeSubmit" value="Add">
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <label href="#" for="btnAddEmployeeSubmit" class="modal-close btn waves-effect waves-light">Add</label>
+    </div>
+  </div>
+  
+    
+  <div id="modal2" class="modal bottom-sheet">
+    <div class="modal-content">
+      <form class="col s12" (ngSubmit)="editEmployee($event)" [formGroup]="editEmployeeForm">
+        <input id="profilePic_editForm" (change)="editEmployeeForm_ImageUpload($event)" class="d-none" type="file" accept="image/png, image/jpeg, image/jpg" />
+        <input type="hidden" formControlName="ID" />
+        <div class="row">
+          <div class="col m3 s12 sticky">
+            <label for="profilePic_editForm" class="uploadImageButton">
+              <img src="{{editEmployeeProfilePic}}" alt="User" class="circle loginImage responsive-img">
+            </label>
+          </div>
+          <div class="col m9 s12">
+              <div class="row">
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">face</i>
+                      <input id="firstName" #FirstName pattern="^[A-Za-z]+$" data-length="20" minlength="3" maxlength="20" formControlName="FirstName" type="text" required class="validate">
+                      <label for="firstName">First name</label>
+                      <span  *ngIf="editEmployeeForm.get('FirstName')?.hasError('required') && editEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('FirstName')?.hasError('minlength') && editEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="The min. length for this field is 3 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('FirstName')?.hasError('maxlength') && editEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="The max. length for this field is 20 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('FirstName')?.hasError('pattern') && editEmployeeForm.get('FirstName')?.touched" class="helper-text" data-error="First name allows alphabets only (space is not allowed)" data-success=""></span>
+                  </div>
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">face</i>
+                      <input id="lastName" #LastName pattern="^[A-Za-z]+$" data-length="20" minlength="3" maxlength="20" formControlName="LastName" type="text" required class="validate">
+                      <label for="lastName">Last Name</label>
+                      <span  *ngIf="editEmployeeForm.get('LastName')?.hasError('required') && editEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('LastName')?.hasError('minlength') && editEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="The min. length for this field is 3 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('LastName')?.hasError('maxlength') && editEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="The max. length for this field is 20 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('LastName')?.hasError('pattern') && editEmployeeForm.get('LastName')?.touched" class="helper-text" data-error="Last name allows alphabets only (space is not allowed)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">  
+                  <div class="input-field col m12 s12">
+                      <i class="material-icons iconis prefix">email</i>
+                      <input id="email" #Email formControlName="Email" type="email" required class="validate">
+                      <label for="email">E-mail</label>                                            
+                      <span  *ngIf="editEmployeeForm.get('Email')?.hasError('required') && editEmployeeForm.get('Email')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('Email')?.hasError('email') && editEmployeeForm.get('Email')?.touched" class="helper-text" data-error="Please enter a Valid Email" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">phone</i>
+                      <input id="phone" #PhoneNumber pattern="^[6-9]\d{9}$" formControlName="PhoneNumber" minlength="10" maxlength="10" type="text" required class="validate">
+                      <label for="phone">Phone Number</label>
+                      <span  *ngIf="editEmployeeForm.get('PhoneNumber')?.hasError('required') && editEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('PhoneNumber')?.hasError('minlength') && editEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of min. 10 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('PhoneNumber')?.hasError('maxlength') && editEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of max. 10 characters." data-success=""></span>
+                      <span  *ngIf="(editEmployeeForm.get('PhoneNumber')?.value.length == 10) && editEmployeeForm.get('PhoneNumber')?.hasError('pattern') && editEmployeeForm.get('PhoneNumber')?.touched" class="helper-text" data-error="Please enter a valid mobile number (only numbers starting from 6-9)" data-success=""></span>
+                  </div>
+                  <div class="input-field col m6 s12">
+                      <i class="material-icons iconis prefix">phone</i>
+                      <input id="AlternateNumber" #AlternateNumber pattern="^(\s*|[6-9]\d{9})$" formControlName="AlternateNumber" minlength="10" maxlength="10" type="text" class="validate">
+                      <label for="AlternateNumber">Alternate Number</label>
+                      <span  *ngIf="editEmployeeForm.get('AlternateNumber')?.hasError('required') && editEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('AlternateNumber')?.hasError('minlength') && editEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of min. 10 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('AlternateNumber')?.hasError('maxlength') && editEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="A valid mobile number should be of max. 10 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('AlternateNumber')?.hasError('pattern') && editEmployeeForm.get('AlternateNumber')?.touched" class="helper-text" data-error="Please enter a valid mobile number (only numbers starting from 6-9)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="input-field col s12">
+                      <i class="material-icons iconis prefix">home</i>
+                      <input id="TempAddrLine1" #TempAddrLine1 (change)="TempAndPermAddrHandler($event)" pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="TempAddrLine1" maxlength="100" type="text" required class="validate">
+                      <label for="TempAddrLine1">Temp. Address (House & street)</label>
+                      <span  *ngIf="editEmployeeForm.get('TempAddrLine1')?.hasError('required') && editEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('TempAddrLine1')?.hasError('maxlength') && editEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('TempAddrLine1')?.hasError('pattern') && editEmployeeForm.get('TempAddrLine1')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row">
+              <div class="input-field col m8 s12">
+                  <i class="material-icons iconis prefix">location_city</i>
+                  <input id="TempAddrLine2" #TempAddrLine2 (change)="TempAndPermAddrHandler($event)" pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="TempAddrLine2" maxlength="100" type="text" required class="validate">
+                  <label for="TempAddrLine2">Temp. Address (Area & City)</label>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrLine2')?.hasError('required') && editEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrLine2')?.hasError('maxlength') && editEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrLine2')?.hasError('pattern') && editEmployeeForm.get('TempAddrLine2')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+              </div>
+              <div class="input-field col m4 s12">
+                  <i class="material-icons iconis prefix">location_on</i>
+                  <input id="TempAddrPincode" #TempAddrPincode (change)="TempAndPermAddrHandler($event)" pattern="^[0-9]*$" formControlName="TempAddrPincode" minlength="6" maxlength="6" type="text" required class="validate">
+                  <label for="TempAddrPincode">Temp. Address (Pincode)</label>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrPincode')?.hasError('required') && editEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrPincode')?.hasError('maxlength') && editEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="Address Line 1 should be of max. 100 characters." data-success=""></span>
+                  <span  *ngIf="editEmployeeForm.get('TempAddrPincode')?.hasError('pattern') && editEmployeeForm.get('TempAddrPincode')?.touched" class="helper-text" data-error="Please enter a valid pincode (only 6 numbers)" data-success=""></span>
+              </div>
+              </div>
+              <div class="row" style="margin-bottom: 50px;">
+              <div class="input-field col s12">              
+                  <label>
+                      <input id="IsTempAndPermAddrSame" (change)="TempAndPermAddrHandler($event)" formControlName="IsTempAndPermAddrSame" type="checkbox" class="validate">
+                      <span>Is Permanent Address Is Same To The Temprory Address?</span>
+                  </label>
+              </div>
+              </div>
+              <div class="row" [class.d-none]="editEmployeeForm.get('IsTempAndPermAddrSame')?.value">
+                  <div class="input-field col s12">
+                      <i class="material-icons iconis prefix">home</i>
+                      <input id="PermAddrLine1" #PermAddrLine1 pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="PermAddrLine1" maxlength="100" type="text" required class="validate">
+                      <label for="PermAddrLine1" [class.active]="editEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (House & street)</label>
+                      <span  *ngIf="editEmployeeForm.get('PermAddrLine1')?.hasError('required') && editEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('PermAddrLine1')?.hasError('maxlength') && editEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                      <span  *ngIf="editEmployeeForm.get('PermAddrLine1')?.hasError('pattern') && editEmployeeForm.get('PermAddrLine1')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                  </div>
+              </div>
+              <div class="row" [class.d-none]="editEmployeeForm.get('IsTempAndPermAddrSame')?.value">
+                <div class="input-field col m8 s12">
+                    <i class="material-icons iconis prefix">location_city</i>
+                    <input id="PermAddrLine2" #PermAddrLine2 pattern="^[a-zA-Z0-9,-<>/&$%@ ]*$" formControlName="PermAddrLine2" maxlength="100" type="text" required class="validate">
+                    <label for="PermAddrLine2" [class.active]="editEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (Area & City)</label>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrLine2')?.hasError('required') && editEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrLine2')?.hasError('maxlength') && editEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="It should be of max. 100 characters." data-success=""></span>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrLine2')?.hasError('pattern') && editEmployeeForm.get('PermAddrLine2')?.touched" class="helper-text" data-error="Please enter a valid characters (alphabets, numbers & ,-<>/&$%@)" data-success=""></span>
+                </div>
+                <div class="input-field col m4 s12">
+                    <i class="material-icons iconis prefix">location_on</i>
+                    <input id="PermAddrPincode" #PermAddrPincode pattern="^[0-9]*$" formControlName="PermAddrPincode" minlength="6" maxlength="6" type="text" required class="validate">
+                    <label for="PermAddrPincode" [class.active]="editEmployeeForm.get('IsTempAndPermAddrSame')?.value">Perm. Address (Pincode)</label>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrPincode')?.hasError('required') && editEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="This field is required." data-success=""></span>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrPincode')?.hasError('minlength') && editEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Address pincode should be of 6 characters." data-success=""></span>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrPincode')?.hasError('maxlength') && editEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Address pincode should be of 6 characters." data-success=""></span>
+                    <span  *ngIf="editEmployeeForm.get('PermAddrPincode')?.hasError('pattern') && editEmployeeForm.get('PermAddrPincode')?.touched" class="helper-text" data-error="Please enter a valid pincode (only 6 numbers)" data-success=""></span>
+                </div>
+              </div>
+              <div class="row">
+              <div class="input-field col s12">
+                  
+                  <i class="material-icons iconis prefix">assignment_ind</i>
+                  <select formControlName="Designation" class="browser-default selectDesignation">
+                      <option value="" disabled selected>Choose Employee Designation<sup class="red-text">*</sup></option>
+                      <option  *ngFor="let Designations of designationList.data;" value="{{Designations.Designation}}">{{Designations?.Designation}}</option>
+                  </select>
+                  <span  *ngIf="editEmployeeForm.get('Designation')?.hasError('required') && editEmployeeForm.get('Designation')?.touched" class="helper-text red-text" data-error="This field is required." data-success=""></span>
+              </div>
+              </div>
+              <div class="row d-none">
+                  <input class="btn waves-effect waves-light" type="submit" name="submit" id="btnEditEmployeeSubmit" value="Add">
+              </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <label href="#" for="btnEditEmployeeSubmit" class="modal-close btn waves-effect waves-light">Update</label>
+    </div>
+  </div>
+ 
